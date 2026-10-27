@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "words": {
+    "en": [
+      {
+        "word": "example",
+        "meaning": "例",
+        "pos": "名詞",
+        "example": "This is an example.",
+        "exampleJa": "これは例です。"
+      }
+    ],
+    "de": [
+      {
+        "word": "Beispiel",
+        "meaning": "例",
+        "pos": "名詞",
+        "example": "Das ist ein Beispiel.",
+        "exampleJa": "これは例です。"
+      }
+    ],
+    "it": [
+      {
+        "word": "esempio",
+        "meaning": "例",
+        "pos": "名詞",
+        "example": "Questo è un esempio.",
+        "exampleJa": "これは例です。"
+      }
+    ]
+  }
+}

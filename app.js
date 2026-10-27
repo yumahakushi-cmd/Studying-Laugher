@@ -5,6 +5,10 @@
   const languageSelect = $("#languageSelect");
   const quizPanel = $("#quizPanel");
   const wordsPanel = $("#wordsPanel");
+  const importPanel = $("#importPanel");
+  const wordImportFile = $("#wordImportFile");
+  const importWordsButton = $("#importWordsButton");
+  const importStatus = $("#importStatus");
   const questionArea = $("#questionArea");
   const feedback = $("#feedback");
   const nextButton = $("#nextButton");
@@ -28,11 +32,16 @@
       return {
         stats: parsed.stats || {},
         history: Array.isArray(parsed.history) ? parsed.history : [],
-        mistakes: parsed.mistakes || {}
+        mistakes: parsed.mistakes || {},
+        customWords: {
+          en: Array.isArray(parsed.customWords?.en) ? parsed.customWords.en : [],
+          de: Array.isArray(parsed.customWords?.de) ? parsed.customWords.de : [],
+          it: Array.isArray(parsed.customWords?.it) ? parsed.customWords.it : []
+        }
       };
     } catch (error) {
       console.warn("保存データを読み込めませんでした", error);
-      return { stats: {}, history: [], mistakes: {} };
+      return { stats: {}, history: [], mistakes: {}, customWords: { en: [], de: [], it: [] } };
     }
   }
   let data = loadData();
@@ -42,7 +51,13 @@
     catch (error) { console.warn("データを保存できませんでした", error); }
   }
   function currentLang() { return languageSelect.value; }
-  function wordsForLang() { return window.WORDS[currentLang()] || []; }
+  // 初期単語は words.js、追加単語は端末内の localStorage から読み込みます。
+  function wordsForLang() {
+    const lang = currentLang();
+    const builtIn = window.WORDS[lang] || [];
+    const added = (data.customWords && data.customWords[lang]) || [];
+    return builtIn.concat(added);
+  }
   function wordKey(word) { return `${currentLang()}::${word.word}`; }
   function shuffle(list) {
     const copy = list.slice();
@@ -64,8 +79,10 @@
       button.classList.toggle("active", button.dataset.mode === mode);
     });
     wordsPanel.hidden = mode !== "words";
-    quizPanel.hidden = mode === "words";
+    importPanel.hidden = mode !== "import";
+    quizPanel.hidden = mode !== "quiz" && mode !== "review";
     if (mode === "words") renderWordList();
+    else if (mode === "import") return;
     else if (mode === "review") startQuestion(true);
     else startQuestion(false);
   }
@@ -187,12 +204,80 @@
       </article>`).join("") || '<p class="muted">該当する単語がありません。</p>';
   }
 
+  // JSON全体を先に検証してから保存し、途中までの取り込みを防ぎます。
+  function validateImportFile(parsed) {
+    if (!parsed || typeof parsed !== "object" || !parsed.words || typeof parsed.words !== "object") {
+      throw new Error('JSONの最上位に "words" オブジェクトが必要です。サンプルJSONを確認してください。');
+    }
+    const normalized = { en: [], de: [], it: [] };
+    const languages = ["en", "de", "it"];
+    let total = 0;
+    for (const lang of languages) {
+      const list = parsed.words[lang] === undefined ? [] : parsed.words[lang];
+      if (!Array.isArray(list)) throw new Error(`${lang} の値は単語の配列にしてください。`);
+      for (let i = 0; i < list.length; i++) {
+        const item = list[i];
+        const required = ["word", "meaning", "pos", "example", "exampleJa"];
+        if (!item || typeof item !== "object" || required.some((key) => typeof item[key] !== "string" || !item[key].trim())) {
+          throw new Error(`${lang} の ${i + 1}番目の単語に必要な項目がありません。word / meaning / pos / example / exampleJa を確認してください。`);
+        }
+        normalized[lang].push({
+          word: item.word.trim(), meaning: item.meaning.trim(), pos: item.pos.trim(),
+          example: item.example.trim(), exampleJa: item.exampleJa.trim()
+        });
+        total++;
+        if (total > 5000) throw new Error("一度に取り込めるのは最大5000語です。ファイルを分けてください。");
+      }
+    }
+    if (total === 0) throw new Error("取り込む単語が見つかりません。words.en / words.de / words.it に単語を入れてください。");
+    return normalized;
+  }
+
+  importWordsButton.addEventListener("click", async () => {
+    const file = wordImportFile.files && wordImportFile.files[0];
+    if (!file) {
+      importStatus.textContent = "先にJSONファイルを選択してください。";
+      importStatus.className = "import-status error";
+      return;
+    }
+    importWordsButton.disabled = true;
+    importStatus.textContent = "ファイルを確認しています…";
+    importStatus.className = "import-status";
+    try {
+      const parsed = JSON.parse(await file.text());
+      const incoming = validateImportFile(parsed);
+      let addedCount = 0;
+      let skippedCount = 0;
+      for (const lang of ["en", "de", "it"]) {
+        if (!Array.isArray(data.customWords[lang])) data.customWords[lang] = [];
+        const existing = new Set([...(window.WORDS[lang] || []), ...data.customWords[lang]].map((word) => word.word.trim().toLocaleLowerCase()));
+        for (const word of incoming[lang]) {
+          const key = word.word.toLocaleLowerCase();
+          if (existing.has(key)) { skippedCount++; continue; }
+          data.customWords[lang].push(word);
+          existing.add(key);
+          addedCount++;
+        }
+      }
+      saveData();
+      renderStats();
+      renderHistory();
+      importStatus.textContent = `取り込み完了：${addedCount}語を追加、${skippedCount}語は重複のためスキップしました。既存の学習記録は保持されています。`;
+      importStatus.className = "import-status success";
+    } catch (error) {
+      importStatus.textContent = `取り込めませんでした：${error.message || "JSONファイルを確認してください。"}`;
+      importStatus.className = "import-status error";
+    } finally {
+      importWordsButton.disabled = false;
+    }
+  });
+
   languageSelect.addEventListener("change", () => {
     sessionCount = 0;
     renderStats();
     renderHistory();
     if (mode === "words") renderWordList();
-    else startQuestion(mode === "review");
+    else if (mode === "quiz" || mode === "review") startQuestion(mode === "review");
   });
   document.querySelectorAll(".mode-button").forEach((button) => {
     button.addEventListener("click", () => setMode(button.dataset.mode));

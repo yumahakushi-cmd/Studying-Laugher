@@ -29,6 +29,7 @@
         <button class="mode-button active" data-mode="quiz">4択クイズ</button>
         <button class="mode-button" data-mode="review">間違い復習</button>
         <button class="mode-button" data-mode="words">単語一覧</button>
+        <button class="mode-button" data-mode="import">単語取込</button>
       </div>
     </section>
 
@@ -45,6 +46,29 @@
       <div class="section-heading"><h2>単語一覧</h2><span id="wordCount" class="muted"></span></div>
       <input id="wordSearch" type="search" placeholder="単語・日本語訳で検索" aria-label="単語を検索">
       <div id="wordList" class="word-list"></div>
+    </section>
+
+    <section id="importPanel" class="panel" hidden>
+      <div class="section-heading"><h2>単語データの一括取り込み</h2></div>
+      <p class="muted">GPTやClaudeで作成したJSONファイルを読み込みます。英語・ドイツ語・イタリア語をまとめて追加できます。</p>
+      <p><a href="word-import-template.json" download>サンプルJSONをダウンロード</a></p>
+      <label for="wordImportFile">取り込むJSONファイル</label>
+      <input id="wordImportFile" type="file" accept=".json,application/json">
+      <button id="importWordsButton" class="primary-button full-width" type="button">単語を取り込む</button>
+      <p id="importStatus" class="import-status" role="status" aria-live="polite">取り込み前です。サンプル形式に合わせたJSONを選んでください。</p>
+      <details>
+        <summary>JSONの形式を確認する</summary>
+        <pre class="json-example">{
+  "version": 1,
+  "words": {
+    "en": [{ "word": "example", "meaning": "例", "pos": "名詞", "example": "This is an example.", "exampleJa": "これは例です。" }],
+    "de": [],
+    "it": []
+  }
+}</pre>
+        <p class="muted">各単語に word（単語）、meaning（日本語訳）、pos（品詞）、example（例文）、exampleJa（例文の日本語訳）が必要です。</p>
+      </details>
+      <p class="muted">安全のため、取り込みは追加のみです。既存の単語・学習履歴・復習記録は削除も上書きもしません。同じ言語に同じ単語がある場合はスキップします。</p>
     </section>
 
     <section class="stats-grid" aria-label="学習統計">

@@ -1,8 +1,8 @@
 // オフライン用キャッシュ。ファイルを更新したら CACHE_NAME の番号を変更してください。
-const CACHE_NAME = "kotoba-trainer-v2";
+const CACHE_NAME = "kotoba-trainer-v3";
 const APP_FILES = [
   "./", "./index.html", "./style.css", "./app.js", "./words.js",
-  "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png"
+  "./manifest.json", "./word-import-template.json", "./icons/icon-192.png", "./icons/icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
