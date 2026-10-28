@@ -1,32 +1,15 @@
 {
-  "version": 1,
-  "words": {
-    "en": [
-      {
-        "word": "example",
-        "meaning": "例",
-        "pos": "名詞",
-        "example": "This is an example.",
-        "exampleJa": "これは例です。"
-      }
-    ],
-    "de": [
-      {
-        "word": "Beispiel",
-        "meaning": "例",
-        "pos": "名詞",
-        "example": "Das ist ein Beispiel.",
-        "exampleJa": "これは例です。"
-      }
-    ],
-    "it": [
-      {
-        "word": "esempio",
-        "meaning": "例",
-        "pos": "名詞",
-        "example": "Questo è un esempio.",
-        "exampleJa": "これは例です。"
-      }
-    ]
-  }
+  "formatVersion": 1,
+  "name": "英語のサンプル単語帳",
+  "language": "en",
+  "description": "単語帳JSONの形式を確認するためのサンプル",
+  "words": [
+    {
+      "word": "example",
+      "meaning": "例、実例",
+      "pos": "名詞",
+      "example": "This is a good example.",
+      "exampleJa": "これはよい例です。"
+    }
+  ]
 }

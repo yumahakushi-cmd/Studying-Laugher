@@ -26,7 +26,7 @@ main { width: min(100% - 28px, 720px); margin: 0 auto; display: grid; gap: 16px;
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; box-shadow: 0 4px 18px #20245a06; }
 .settings-panel > label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 7px; }
 select, input[type="search"] { width: 100%; min-height: 48px; padding: 10px 13px; color: var(--ink); background: #fafaff; border: 1px solid var(--line); border-radius: 12px; }
-.mode-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin-top: 14px; }
+.mode-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; margin-top: 14px; }
 .mode-button { min-height: 43px; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: #626985; font-size: 13px; font-weight: 700; padding: 7px 4px; }
 .mode-button.active { color: var(--primary); background: #efefff; border-color: #c9c7ff; }
 .section-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
@@ -100,4 +100,13 @@ footer { text-align: center; padding: 18px 10px 28px; color: #969bb0; font-size:
 #importPanel details { margin-top: 14px; font-size: 13px; }
 #importPanel summary { cursor: pointer; font-weight: 700; }
 .json-example { overflow-x: auto; padding: 12px; border-radius: 10px; background: #f7f7ff; font-size: 11px; }
-@media (max-width: 390px) { .mode-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .mode-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.book-list { display: grid; gap: 6px; }
+.book-item { display: flex; align-items: center; justify-content: space-between; gap: 7px; border: 1px solid var(--line); border-radius: 9px; padding: 7px 9px; }
+.book-select { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; cursor: pointer; }
+.book-select input { width: 14px; height: 14px; flex: 0 0 14px; margin: 0; accent-color: var(--primary); }
+.book-title { min-width: 0; display: grid; gap: 2px; }
+.book-title strong { font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
+.book-title small { color: var(--muted); font-size: 11px; line-height: 1.35; overflow-wrap: anywhere; }
+.delete-book { flex: 0 0 auto; color: var(--bad); }
+@media (min-width: 601px) { .book-list { grid-template-columns: 1fr 1fr; } }

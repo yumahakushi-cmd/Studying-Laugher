@@ -1,5 +1,5 @@
 // オフライン用キャッシュ。ファイルを更新したら CACHE_NAME の番号を変更してください。
-const CACHE_NAME = "kotoba-trainer-v3";
+const CACHE_NAME = "kotoba-trainer-v5";
 const APP_FILES = [
   "./", "./index.html", "./style.css", "./app.js", "./words.js",
   "./manifest.json", "./word-import-template.json", "./icons/icon-192.png", "./icons/icon-512.png"
